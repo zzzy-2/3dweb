@@ -1,0 +1,87 @@
+/* 顶部分类导航模块 */
+.category-bar {
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+}
+.category-bar .category-list {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+.category-bar .category-item {
+    color: #6b7280;
+    text-decoration: none;
+    padding: 4px 0;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+}
+.category-bar .category-item.active {
+    color: #1f2937;
+    border-bottom-color: #3b82f6;
+    font-weight: 500;
+}
+.category-bar .category-item:hover {
+    color: #3b82f6;
+}
+.category-bar .hot-tags {
+    margin-top: 12px;
+    color: #9ca3af;
+    font-size: 14px;
+}
+.category-bar .hot-tags .tag {
+    margin-left: 12px;
+    color: #6b7280;
+    text-decoration: none;
+}
+.category-bar .hot-tags .tag:hover {
+    color: #3b82f6;
+}
+/* 顶部分类+搜索框的横向布局 */
+.category-bar .category-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap; /* 小屏幕自动换行 */
+}
+
+/* 搜索框样式美化 */
+.category-bar .search {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.category-bar .search input {
+  height: 100%;
+  padding: 0 12px;
+  border: 1px solid #e5e7eb;
+  border-right: none; /* 和按钮无缝衔接 */
+  outline: none;
+  font-size: 14px;
+  color: #333;
+  width: 200px; /* 搜索框宽度 */
+}
+
+.category-bar .search input:focus {
+  border-color: #3b82f6; /* 聚焦时边框变主色 */
+}
+
+.category-bar .search button {
+  height: 100%;
+  padding: 0 16px;
+  border: none;
+  background-color: #3b82f6; /* 和页面 active 色统一 */
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.category-bar .search button:hover {
+  background-color: #2563eb; /* hover 加深 */
+}

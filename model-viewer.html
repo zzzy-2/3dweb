@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D模型展示</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+    <!-- 配置ES Module路径映射（核心：指向本地文件） -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "./js/three.module.js",
+            "three/addons/": "./js/addons/"
+        }
+    }
+    </script>
+</head>
+<body>
+    <div class="loading">加载中...</div>
+    <!-- 保留type="module"，使用ES Module导入 -->
+    <script type="module">
+        // 正确导入ES Module版的Three.js及插件
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+function getUrlParam(name) {
+    const reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`);
+    const r = window.location.search.substr(1).match(reg);
+    if (r != null) return decodeURIComponent(r[2]);
+    return null;
+}
+        const modelName = getUrlParam('name');
+        if (!modelName) {
+            document.querySelector('.loading').textContent = '未获取到模型名称';
+            throw new Error('未获取到模型名称');
+        }
+
+        // 2. 初始化Three.js场景（原有逻辑不变）
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xffffff);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 50;
+
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        document.body.removeChild(document.querySelector('.loading'));
+
+        // 控制器（鼠标拖拽/缩放）
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+
+        // 光源
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+        const pointLight = new THREE.PointLight(0xffffff, 0.4);
+        pointLight.position.set(50, 50, 50);
+        scene.add(pointLight);
+
+        // 3. 调用后端接口加载STL模型（原有逻辑不变）
+        async function loadModelFromDB() {
+            try {
+                // 3.1 查模型本地路径（后端接口，端口要和你的后端一致）
+                const pathRes = await fetch(`http://localhost:3001/api/getModelPath?name=${encodeURIComponent(modelName)}`);
+                const pathData = await pathRes.json();
+                if (pathRes.status !== 200) throw new Error(pathData.error || '查询模型路径失败');
+
+                // 3.2 加载STL文件流
+                const stlRes = await fetch(`http://localhost:3001/api/getSTLFile?path=${encodeURIComponent(pathData.path)}`);
+                if (!stlRes.ok) throw new Error('加载STL文件失败');
+                
+                // 3.3 解析STL并渲染
+                const arrayBuffer = await stlRes.arrayBuffer();
+                const loader = new STLLoader();
+                const geometry = loader.parse(arrayBuffer);
+
+                const material = new THREE.MeshPhongMaterial({ 
+                    color: 0xcccccc, 
+                    specular: 0x111111, 
+                    shininess: 20 
+                });
+                const mesh = new THREE.Mesh(geometry, material);
+                scene.add(mesh);
+
+                // 调整模型居中+缩放
+                geometry.computeBoundingBox();
+                const center = geometry.boundingBox.getCenter(new THREE.Vector3());
+                mesh.position.sub(center);
+                const size = geometry.boundingBox.getSize(new THREE.Vector3());
+                const maxDim = Math.max(size.x, size.y, size.z);
+                mesh.scale.set(50 / maxDim, 50 / maxDim, 50 / maxDim);
+
+            } catch (err) {
+                document.querySelector('.loading').textContent = '加载失败：' + err.message;
+                console.error('模型加载失败:', err);
+            }
+        }
+
+        // 4. 动画循环
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // 5. 窗口自适应
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // 启动加载
+        loadModelFromDB();
+    </script>
+</body>
+</html>

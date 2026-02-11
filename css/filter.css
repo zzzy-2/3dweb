@@ -1,0 +1,67 @@
+.filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .sort-options {
+            display: flex;
+            gap: 16px;
+        }
+        .sort-options .sort-item {
+            color: #6b7280;
+            text-decoration: none;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+        }
+        .sort-options .sort-item.active {
+            color: #1f2937;
+            border-bottom-color: #3b82f6;
+            font-weight: 500;
+        }
+        .filter-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .filter-controls .filter-select {
+            padding: 6px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            background-color: #fff;
+            color: #6b7280;
+            cursor: pointer;
+        }
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .toggle-switch input {
+            width: 36px;
+            height: 18px;
+            appearance: none;
+            background-color: #e5e7eb;
+            border-radius: 9px;
+            position: relative;
+            cursor: pointer;
+        }
+        .toggle-switch input:checked {
+            background-color: #3b82f6;
+        }
+        .toggle-switch input::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background-color: #fff;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: 0.2s;
+        }
+        .toggle-switch input:checked::after {
+            left: 20px;
+        }
